@@ -191,8 +191,8 @@ def main():
             if record['driver'] == 'nvidia':
                 record['rt_switch'] = '__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia'
                 subprocess.call(['cat', '/proc/driver/nvidia/params'])
-            else:
-                record['DynamicPowerManagement'] = ''
+            #else:
+            #    record['DynamicPowerManagement'] = '0'
             items = ["{key}: {value}".format(key=k, value=record[k])
                      for k in sorted(record.keys())]
             print("\n".join(items))
