@@ -139,6 +139,7 @@ def main():
     try:
         for index, record in enumerate(video_devices, 1):
             record['index'] = index
+            record['rt_switch'] = ''
             record['gpu_count'] = len(video_devices)
             if record['vendor_id'] == '4098':  # vendor == amd/ati
                 if subprocess.call(
@@ -175,9 +176,11 @@ def main():
             else:
                 record['prime_gpu_offload'] = 'Off'
             record['switch_to_cmd'] = switch_cmds[record['driver']][0]
-            if index == 2 and record['driver'] == 'nvidia':
-                subprocess.call(['cat', '/proc/driver/nvidia/params'])
-                record['rt_switch'] = '__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia'
+            #if index == 2 and record['driver'] == 'nvidia':
+            #    subprocess.call(['cat', '/proc/driver/nvidia/params'])
+            #    record['rt_switch'] = '__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia'
+            #else:
+            #    record['DynamicPowerManagement'] = ''
             if index == 2 and len(video_devices) == 2:
                 # we're at GPU number 2 and there are two, so here we assume
                 # that video_devices[0] is the built-in one
@@ -185,6 +188,11 @@ def main():
                     switch_cmds[record['driver']][1])
         # Finally, print the records
         for record in video_devices:
+            if record['driver'] == 'nvidia':
+                record['rt_switch'] = '__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia'
+                subprocess.call(['cat', '/proc/driver/nvidia/params'])
+            else:
+                record['DynamicPowerManagement'] = ''
             items = ["{key}: {value}".format(key=k, value=record[k])
                      for k in sorted(record.keys())]
             print("\n".join(items))
