@@ -190,12 +190,13 @@ def main():
         # Finally, print the records
         for record in video_devices:
             if record['driver'] == 'nvidia' or record['driver'] == 'pcieport':
-                subprocess.call(['cat', '/proc/driver/nvidia/params'])
-                if os.path.isfile('/run/nvidia_runtimepm_supported'):
-                    record['rt_switch'] = '__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia'
-                    record['runtime_pm'] = 'yes'
-                else:
-                    record['runtime_pm'] = 'no'
+                record['runtime_pm'] = 'no'
+                #subprocess.call(['cat', '/proc/driver/nvidia/params'])
+                if os.path.isfile('/run/nvidia_runtimepm_enabled'):
+                    with open('/run/nvidia_runtimepm_enabled', 'r') as file:
+                        if file.read().strip() == "yes":
+                           record['rt_switch'] = '__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia'
+                           record['runtime_pm'] = 'yes'
             #else:
             #    record['DynamicPowerManagement'] = '0'
             items = ["{key}: {value}".format(key=k, value=record[k])
