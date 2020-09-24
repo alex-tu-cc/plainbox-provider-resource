@@ -177,11 +177,6 @@ def main():
             else:
                 record['prime_gpu_offload'] = 'Off'
             record['switch_to_cmd'] = switch_cmds[record['driver']][0]
-            #if index == 2 and record['driver'] == 'nvidia':
-            #    subprocess.call(['cat', '/proc/driver/nvidia/params'])
-            #    record['rt_switch'] = '__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia'
-            #else:
-            #    record['DynamicPowerManagement'] = ''
             if index == 2 and len(video_devices) == 2:
                 # we're at GPU number 2 and there are two, so here we assume
                 # that video_devices[0] is the built-in one
@@ -191,14 +186,11 @@ def main():
         for record in video_devices:
             if record['driver'] == 'nvidia' or record['driver'] == 'pcieport':
                 record['runtime_pm'] = 'no'
-                #subprocess.call(['cat', '/proc/driver/nvidia/params'])
                 if os.path.isfile('/run/nvidia_runtimepm_enabled'):
                     with open('/run/nvidia_runtimepm_enabled', 'r') as file:
                         if file.read().strip() == "yes":
                            record['rt_switch'] = '__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia'
                            record['runtime_pm'] = 'yes'
-            #else:
-            #    record['DynamicPowerManagement'] = '0'
             items = ["{key}: {value}".format(key=k, value=record[k])
                      for k in sorted(record.keys())]
             print("\n".join(items))
