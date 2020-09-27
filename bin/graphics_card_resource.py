@@ -131,6 +131,7 @@ def main():
     switch_cmds['nvidia'] = ('prime-select nvidia', 'prime-select intel')
     # nvidia uses 'pcieport' driver when the dGPU is disabled
     switch_cmds['pcieport'] = ('prime-select nvidia', 'prime-select intel')
+    switch_cmds['i915'] = ('prime-select nvidia', 'prime-select intel')
 
     switch_cmds['amdgpu-pro'] = (
         '/opt/amdgpu-pro/bin/amdgpu-pro-px --mode performance',
@@ -194,6 +195,7 @@ def main():
             items = ["{key}: {value}".format(key=k, value=record[k])
                      for k in sorted(record.keys())]
             print("\n".join(items))
+            #subprocess.call(["dgpu_resource.sh"])
             print("")
     except OSError as err:
         raise SystemExit(err)
