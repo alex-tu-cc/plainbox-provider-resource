@@ -23,6 +23,7 @@ import collections
 import subprocess
 import shlex
 import string
+import os.path
 
 
 def slugify(_string):
@@ -182,6 +183,12 @@ def main():
                     switch_cmds[record['driver']][1])
         # Finally, print the records
         for record in video_devices:
+            if record['driver'] == 'nvidia' or record['driver'] == 'pcieport':
+                record['runtime_pm'] = 'no'
+                if os.path.isfile('/run/nvidia_runtimepm_enabled'):
+                    with open('/run/nvidia_runtimepm_enabled', 'r') as file:
+                        if file.read().strip() == "yes":
+                            record['runtime_pm'] = 'yes'
             items = ["{key}: {value}".format(key=k, value=record[k])
                      for k in sorted(record.keys())]
             print("\n".join(items))
