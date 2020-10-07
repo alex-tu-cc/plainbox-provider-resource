@@ -23,6 +23,7 @@ import collections
 import subprocess
 import shlex
 import string
+import os.path
 
 
 def slugify(_string):
@@ -139,6 +140,7 @@ def main():
     try:
         for index, record in enumerate(video_devices, 1):
             record['index'] = index
+            record['rt_switch'] = ''
             record['gpu_count'] = len(video_devices)
             if record['vendor_id'] == '4098':  # vendor == amd/ati
                 if subprocess.call(
@@ -182,6 +184,13 @@ def main():
                     switch_cmds[record['driver']][1])
         # Finally, print the records
         for record in video_devices:
+            if record['driver'] == 'nvidia' or record['driver'] == 'pcieport':
+                record['runtime_pm'] = 'no'
+                if os.path.isfile('/run/nvidia_runtimepm_enabled'):
+                    with open('/run/nvidia_runtimepm_enabled', 'r') as file:
+                        if file.read().strip() == "yes":
+                           record['rt_switch'] = '__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia'
+                           record['runtime_pm'] = 'yes'
             items = ["{key}: {value}".format(key=k, value=record[k])
                      for k in sorted(record.keys())]
             print("\n".join(items))
