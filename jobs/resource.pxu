@@ -114,7 +114,7 @@ estimated_duration: 1.16
 plugin: resource
 command:
   # shellcheck disable=SC2016
-  dpkg-query -W -f='name: ${Package}\n\n' || true
+  dpkg-query -W -f='name: ${Package}\nversion: ${Version}\n\n' || true
 _description: Generates a list of packages
 _summary: Collect information about installed software packages
 
@@ -124,7 +124,7 @@ plugin: resource
 _summary: Enumerate available system executables
 _description: Generates a resource for all available executables
 command:
-  xargs -n1 -d: <<< "$PATH" | xargs -I{} find -H {} -maxdepth 1 -xtype f -executable -printf "name: %f\n\n" | sort -u | awk '{print}' ORS='\n\n' || true
+  xargs -n1 -d: <<< "$PATH" | xargs -I{} find -H {} -maxdepth 1 -xtype f -executable -printf "name: %f\n\n" 2> /dev/null | sort -u | awk '{print}' ORS='\n\n' || true
 
 id: device
 estimated_duration: 0.48
