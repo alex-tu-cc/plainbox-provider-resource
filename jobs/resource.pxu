@@ -181,6 +181,7 @@ estimated_duration: 0.03
 plugin: resource
 command:
   tr ' ' '\n' < /sys/power/state | while IFS= read -r state; do echo "$state: supported"; done
+  echo mem_sleep: "$(cat /sys/power/mem_sleep)"
 _summary: Create resource info for supported sleep states
 
 unit: template
